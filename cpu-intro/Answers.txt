@@ -1,0 +1,25 @@
+1.
+    100%, da nie auf I/O gewartet werden muss.
+
+2.
+    4 + 7 = 11
+
+3.
+    Der Prozess 4:100, kann jetzt laufen, während der Prozess 3:0 auf I/O wartet.
+
+4.
+    Nun muss der Prozess 4:100 darauf warten, bis der Prozess 3:0 mit I/O fertig ist, somit dauert es wieder 11 Zeit.
+
+5.
+    Siehe 3.
+
+6.
+    Die Ressourcen werden absolut nicht effektiv ausgenutzt, da der Prozess da die Prozesse 5:100 laufen könnten, während 3:0 auf I/O wartet.
+
+7.
+    Nun laufen die Prozesse 5:100 effektiv, wenn der Prozess 3:0 auf I/O wartet.
+    Es könnte ja sein, dass ein Prozess mehrere Dateien laden möchte, somit währe es eine gute Idee einen Prozess direkt zu startet, nach einer I/O operation.
+
+8.
+    SWITCH_ON_END hat das Ergebnis immer drastisch verschlechtert.
+    IO_RUN_IMMEDIATE hat im dritten Fall das Ergebnis minimal verbessert.

@@ -1,0 +1,154 @@
+1.
+    a
+    |
+    +--b
+
+    a
+    |
+    +--b
+    |
+    +--c
+
+    a
+    |
+    +--b
+
+    a
+    |
+    +--b
+    |
+    +--d
+
+    a
+    |
+    +--b
+    |
+    +--d
+    |
+    +--e
+
+2.
+    A higher fork percantage will leed to larger and more complex trees, while lower fork percantages will leed to smaller and simple trees, often just consisting of two or three nodes.
+
+3.
+                             Process Tree:
+                               a
+
+    Action?
+                               a
+                               └── b
+    Action?
+                               a
+                               ├── b
+                               └── c
+    Action?
+                               a
+                               ├── b
+                               └── c
+                                   └── d
+    Action?
+                               a
+                               ├── b
+                               └── c
+                                   ├── d
+                                   └── e
+    Action?
+                               a
+                               ├── b
+                               ├── d
+                               └── e
+
+    Actions taken:
+        a forks b
+        a forks c
+        c forks d
+        c forks e
+        c exits
+
+4.
+    As we can see from Question 3, the orphaned processes become the children of the top most process. When using the `-R` flag, these processes just move down one step of the tree.
+
+5.
+                           Process Tree:
+                               a
+
+    Action: a forks b
+    Action: b forks c
+    Action: a forks d
+    Action: b forks e
+    Action: d forks f
+
+                        Final Process Tree?
+    a
+    |
+    +--b
+    |  |
+    |  +--c
+    |  |
+    |  +--e
+    |
+    +--d
+       |
+       +--f
+
+6.
+    Seed 7
+                           Process Tree:
+                               a
+
+    Action?
+    Action?
+    Action?
+    Action?
+    Action?
+
+                        Final Process Tree:
+                               a
+                               ├── b
+                               │   └── d
+                               └── c
+                                   ├── e
+                                   └── f
+
+    Actions:
+        a forks b
+        a forks c
+        b forks d
+        c forks e
+        c forks f
+
+    Seed 5 is impossible to tell, because we cannot know in what order, and which process forked which before process b and c exited. Generally it's hard to tell after a process has exited.
+
+
+
+Coding Homework:
+
+1.
+    Each process gets their own copy of x.
+
+2.
+    Yes, they poth get access to the file descriptor.
+    They can also both write to the file concurrently.
+    Quoting the `open()` man page:
+        "a child process created via fork(2) inherits duplicates of its parent's file descriptors, and those duplicates refer to the same open file descriptions."
+
+3.
+    By having a huge empty `for loop` in the parent process before writing "goodbye", the child process runs first.
+
+4.
+    The variants with 'l' take the executed commands arguments as a single string.
+    The variants with 'v' take those arguments as an array of strings.
+    The variants with 'e' take extra strings for environment variables
+    The variants with 'p' take a file instead of a path. So instead of "/bin/ls" it's enough to have "ls".
+
+5.
+    `wait()` returnes the PID of the child.
+    man page:
+        "wait(): on success, returns the process ID of the terminated child; on failure, -1 is returned."
+    Calling `wait()` in the child does nothing, since it waits for its own children of which it has none.
+
+6.
+    The `waitpid()` is useful, if you want to wait for a specific child.
+
+7.
+    Since the stdout is closed, the `printf()` has nowhere to print to, so there appeares nothing in the console.

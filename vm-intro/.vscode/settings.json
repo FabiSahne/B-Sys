@@ -1,0 +1,9 @@
+{
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/var/home/fabian/htwg/B-SYS/ostep-homework/vm-intro",
+            "binaryPath": "/var/home/fabian/htwg/B-SYS/ostep-homework/vm-intro/memory-user",
+            "binaryArgs": []
+        }
+    ]
+}
