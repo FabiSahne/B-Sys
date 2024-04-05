@@ -61,5 +61,4 @@ null.c:6:18: note: returned from ‘malloc’
 ```
 free(): invalid pointer
 Aborted (core dumped)
-```
-8. 
+``` 
