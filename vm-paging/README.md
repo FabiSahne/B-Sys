@@ -1,3 +1,62 @@
+# Questions
+### 1. How do the page table sizes change when changing the address space size or the page size?
+When increasing the address space sice, the number of pages increases, but when increasing the page size, the number of pages decreases.
+
+### 2. Translate and see what happenes as the percentage of pages allocated pages increases.
+```
+Page Table (from entry 0 down to the max size)
+  [       0]  0x80000018
+  [       1]  0x80000008
+  [       2]  0x8000000c
+  [       3]  0x80000009
+  [       4]  0x80000012
+  [       5]  0x80000010
+  [       6]  0x8000001f
+  [       7]  0x8000001c
+  [       8]  0x80000017
+  [       9]  0x80000015
+  [      10]  0x80000003
+  [      11]  0x80000013
+  [      12]  0x8000001e
+  [      13]  0x8000001b
+  [      14]  0x80000019
+  [      15]  0x80000000
+
+Virtual Address Trace
+  VA 0x00002e0f (decimal:    11791) --> 00004e0f (decimal    19983) [VPN 11]
+  VA 0x00001986 (decimal:     6534) --> 00007d86 (decimal    32134) [VPN 6]
+  VA 0x000034ca (decimal:    13514) --> 00006cca (decimal    27850) [VPN 13]
+  VA 0x00002ac3 (decimal:    10947) --> 00000ec3 (decimal     3779) [VPN 10]
+  VA 0x00000012 (decimal:       18) --> 00006012 (decimal    24594) [VPN 0]
+```
+Formula VA -> PA:
+
+VirtAddr ÷R Page Size -> VPN, Offset (Usually done with bit-shifting)
+
+VPN -> Frame Nr
+
+Frame Nr × Page Size -> Base Addr
+
+Base Addr + Offset -> PhysAddr
+
+---
+As the percentage of allocated pages increases, so does the percentage of valid VirtAddrs
+
+### 3. 🤪 crazy parameters 🥴
+`-p 8   -a 32   -p 1024 -v -s 1`
+
+Probably unrealistic, since with such a small physical Memory-size you woudn't want to waste any with paging or virtualisation in general.
+
+`-p 8k  -a 32k  -p 1m   -v -s 2`
+
+This seems realistic to me.
+
+`-p 1m  -a 256m -p 512m -v -s 3`
+
+Not very realistic, as having such large address spaces with so tiny page sizes is probably very inefficient. Also there is just space for two address spaces.
+
+### 4. Try stuff out.
+Ok
 
 # Overview
 

@@ -1,10 +1,64 @@
+# Questions
+#### 1. Run with flags `-n 10 -H 0 -p BEST -s 0` and predict the free list
+```
+ptr[0] = malloc(3);
+  --> [addr: 1003, len 97]
 
+free(ptr[0]);
+  --> [addr: 1000, len 3][addr: 1003, len 97]
+
+prt[1] - malloc(5);
+  --> [addr: 1000, len 3][addr: 1008, len 92]
+
+free(ptr[1]);
+  --> [addr: 1000, len 3][addr: 1003, len 5][addr: 1008, len 92]
+
+ptr[2] = malloc(8);
+  --> [addr: 1000, len 3][addr:1003, len 5][addr: 1016, len 84]
+
+free(ptr[2]);
+  --> [addr: 1000, len 3][addr: 1003, len 5][addr: 1008, len 8][addr: 1016, len 84]
+
+ptr[3] = malloc(8);
+  -> [addr: 1000, len 3][addr:1003, len 5][addr: 1016, len 84]
+
+free(ptr[3]);
+  --> [addr: 1000, len 3][addr: 1003, len 5][addr: 1008, len 8][addr: 1016, len 84]
+
+ptr[4] = malloc(2);
+  --> [addr: 1002, len 1][addr: 1003, len 5][addr: 1008, len 8][addr: 1016, len 84]
+
+ptr[5] = malloc(7);
+  --> [addr: 1002, len 1][addr: 1003, len 5][addr: 1015, len 1][addr: 1016, len 84]
+```
+
+### 2. What happenes when using a WORST fit policy
+The allocated areas get assined in the largest, in this case last, free area.
+
+### 3. What about FIRST
+In this case nothing changes since the first fitting free area ist also the best.
+But since the allocator doesn't have to traverse the whole list when allocating, and just returns the first fitting area, it is faster.
+
+### 4. Use the different orderings `ADDRSORT` `SIZESORT+` and `SIZESORT-` and see how the policy and list orderings change
+The allocations themselves dont change, only how the freelist itself is saved. With `SIZESORT-` the list is reversed from `ADDRSORT` or `SIZESORT+`
+
+### 5. Use 1000 allocatins. What happenes to larger allocation requests over time? Run with and without coalescing. Does ordering matter?
+When coalescing, the freelist stays very small (around 1 to 5 elements, rarely up to 8) while without coalescing, the freelist continually grows non stop up to 35 elements in this case. When not coalescing and using `SIZESORT+` a lot more allocations fail, then with other orderings.
+
+### 6. What happenes when you change the percent allocated fraction `-P` to higher than 50?
+Whithout coalescing, the allocations quickly fail even though theoretically the heap had enough free memory. And with coalescing it just delays the enevitable, as the heap still fills, though more effectively now.
+
+### 7. How can you fragmentate the freelist as much as possible.
+Request many many small aloocations, and then free only every second one.
+
+
+---
 # Overview
 
 This program, malloc.py, allows you to see how a simple memory allocator
 works. Here are the options that you have at your disposal:
 
-```sh
+```
   -h, --help            show this help message and exit
   -s SEED, --seed=SEED  the random seed
   -S HEAPSIZE, --size=HEAPSIZE
@@ -37,7 +91,7 @@ look like, as well as the success or failure of each operation.
 
 Here is a simple example:
 
-```sh
+```
 prompt> ./malloc.py -S 100 -b 1000 -H 4 -a 4 -l ADDRSORT -p BEST -n 5 
 
 ptr[0] = Alloc(3)  returned ?
@@ -68,7 +122,7 @@ free list after each operation.
 
 Here we look at the results by using the -c option.
 
-```sh
+```
 prompt> ./malloc.py -S 100 -b 1000 -H 4 -a 4 -l ADDRSORT -p BEST -n 5 -c
 
 ptr[0] = Alloc(3)  returned 1004 (searched 1 elements)
@@ -104,7 +158,7 @@ The next operation is a Free, of "ptr[0]" which is what stores the results of
 the previous allocation request. As you can expect, this free will succeed
 (thus returning "0"), and the free list now looks a little more complicated:
 
-```sh
+```
 Free(ptr[0]) returned 0
 Free List [ Size 2 ]:  [ addr:1000 sz:8 ] [ addr:1008 sz:92 ]
 ```
@@ -115,7 +169,7 @@ the second being the 92-byte chunk.
 
 We can indeed turn on coalescing via the -C flag, and the result is:
 
-```sh
+```
 prompt> ./malloc.py -S 100 -b 1000 -H 4 -a 4 -l ADDRSORT -p BEST -n 5 -c -C
 ptr[0] = Alloc(3)  returned 1004 (searched 1 elements)
 Free List [ Size 1 ]:  [ addr:1008 sz:92 ]
