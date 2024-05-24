@@ -30,7 +30,7 @@ Looking at `-s 0` and `-s 2` it is clear the final value will be 2. Looking at `
 
 So yes, the timing does matter.
 
-```x86asm
+```assembly
 ; critical section start
 1000  mov   2000, %ax
 1001  add   $1, %ax
