@@ -1,3 +1,59 @@
+# Questions
+### 1.What will `%dx` be during the run?
+Since `%dx` will start as 0, subtracting one will make it negative.
+`jgte` jumps if `%dx` is positive, therefore the program will halt.
+
+### 2. What values will `%dx` see? Does the presence of multiple threads affect your calculations? Is there a race in this code?
+Since the interrupt is specified to run at long intervals, each thread will run procedurally. Therefore `%dx` will count down from 3 to -1 twice, once for each thread. There is no race, since the threads are not mutating shared data at the same time.
+
+### 3. Does the interrupt frequency change anything?
+No, each thread has its own copy of `%dx`, therefore nothing changes.
+
+### 4. What is the value at address 2000?
+The program does this:
+```c
+int* value = 2000;
+do {
+   int v = *value;
+   v += 1;
+   *value = v;
+   bx -= 1;
+} while (bx > 0);
+```
+Since neither address 2000 nor `%bx` are specified, they both start out as 0. Therefore the value at address 2000 goes from 0 to one, and the program exits.
+
+### 5. Why does each loop run 3 times? What is the final value of `value`?
+We specify `%bx` as 3, therefore the loops run 3 times. Thi final value is 6.
+
+### 6. Can you tell by looking at the thread interleaving what the final value of `value` will be? Does the timing fo the interrupt matter? Where can it safely occur? Where not? In other words, where is the critical section?
+Looking at `-s 0` and `-s 2` it is clear the final value will be 2. Looking at `-s 1` however, since Thread 1 grabs the value and saves it back, in between of Thread 0, the final value will only be 1.
+
+So yes, the timing does matter.
+
+```x86asm
+; critical section start
+1000  mov   2000, %ax
+1001  add   $1, %ax
+1002  mov   %ax, 2000
+; critical section end
+1003  sub   $1, %bx
+...
+```
+
+### 7. What will the final value of `value` be? What when you change `-i 2`, `-i 3`, etc.? For which interrupt intervals does the program give the "correct" answer?
+Using `-i 1` or `-i 2`, the final value will be 1. Only `-i 3` and more will give the correct answer 2.
+
+### 8. What interrupt intervals lead to a correct outcome? Which are surprising?
+Since the critical section as well as the non critical section are both 3 instructions long, interrupt intervals which are a multiple of 3 give the correct solution.
+
+### 9. How should the code behave? How is the value at location 2000 being used by the threads? What will its final value be?
+Thread 0 set the value at address 2000 to one. Thread 1 will loop forever, until the value at address 2000 is 1.
+The final value should be 1.
+
+### 10. How do the threads behave? What is Thread 0 doing? How would changing the interrupt interval change the trace outcome? Is the program efficiently using the CPU?
+Thread 0 is constantly waiting for the value to be one. Only after an interrupt will Thread 1 set the value to 1 and Thread 0 can halt.
+
+Therefore changing the interrupt interval will change the outcome dramatically. The program is not using the CPU efficiently.
 
 # Overview
 
