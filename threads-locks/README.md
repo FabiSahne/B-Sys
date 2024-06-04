@@ -1,3 +1,47 @@
+# Questions
+## 1. Can you understand `flag.s`?
+Yes. It simply loads the flag value, checks if it's 0 (free). If it's locked, the program loops until it is no more locked, if it's free, it locks it (setting it to 1) and continues updating a shared value, unlocks the lock and all this is in a for loop over `%bx`.
+
+## 2. Does the program work with defaults? What value will `flag` end up in?
+Yes, the program works with the defaults. The `flag` will end up as 0.
+
+## 3. Change the value of `%bx` to 2. Does this change the above answer?
+No, the program still works fine.
+
+## 4. With `%bx` at a high value. What interrupt intervals work?
+Almost none of the intervals work. I've got 15 to work, but above that it breaks again.
+
+## 5. How is the program `test-and-set.s` different?
+Instead of loading, comparing and writing to the lock, which itself will fail if it is interrupted, `test-and-set.s` uses the `xchg` instruction, by exchanging, aka swapping the lock value, with a register set to one. If the lock is locked, nothing happens as 1 is exchanged with 1. But if the lock is unlocked, it is immediately locked, and the xchg register is now 0, which indicates the lock was unlocked.
+
+Releasing the lock is done with a normal `mov` instruction, as we own the lock, this is fine.
+
+## 6. Does the code always work as expected? Is the CPU used efficiently?
+Yes the code works as expected, but the CPU is not used efficiently with very low, or very large interrupt intervals.
+
+## 7. Test with the `-P` flag.
+idk
+
+## 9. what behavior do you see with `peterson.s`?
+idk, looks good to me? From `-i` set from 1 to 15 (code length), it all works out
+
+## 10.
+idk
+
+## 11. Does `ticket.s` spin long?
+With the default interrupt interval, yes.
+
+## 12. How does the code behave with more threads?
+The same?
+
+## 13. Find a scenario where `test-and-set.s` wastes time spinning, but `yield.s` does not.
+With `%bx=10` and default interrupt behavior, `test-and-set.s` takes roughly 325 instructions to finish, while `yield.s` takes only 243 instructions.
+
+## 14. What does `test-and-test-and-set.s` do and what kind of savings does it introduce as compared to `test-and-set.s`?
+Instead of spinning endlessly, trying to xchg 1 with 1, or rechecking a variable which cannot change, it reloads the `var mutex` and xchg one after another.
+
+There are no savings, it actually takes longer compared to `test-and-set.s`
+
 
 # Overview
 
@@ -5,7 +49,7 @@ Welcome to this simulator! The idea is to gain familiarity with threads by
 seeing how they interleave; the simulator, `x86.py`, will help you in
 gaining this understanding.
 
-The simulator mimicks the execution of short assembly sequences by multiple
+The simulator mimics the execution of short assembly sequences by multiple
 threads. Note that the OS code that would run (for example, to perform a
 context switch) is not shown; thus, all you see is the interleaving of the
 user code.
