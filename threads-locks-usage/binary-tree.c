@@ -200,6 +200,9 @@ void do_tree_things(int threads, int ops)
     printf("Number of operations: %d\n", ops);
     printf("Time taken to insert: %ld microseconds\n", ((insert.tv_sec * 1000000 + insert.tv_usec) - (start.tv_sec * 1000000 + start.tv_usec)));
     printf("Time taken to lookup: %ld microseconds\n\n", ((end.tv_sec * 1000000 + end.tv_usec) - (insert.tv_sec * 1000000 + insert.tv_usec)));
+
+    free(tid);
+    Tree_Delete(&T);
 }
 
 
